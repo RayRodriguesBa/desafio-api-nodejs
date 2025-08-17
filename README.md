@@ -101,38 +101,37 @@ Tabelas principais definidas em `src/database/schema.ts`:
 
 ## Fluxo principal (Mermaid)
 sequenceDiagram
-  participant C as Client
-  participant S as Fastify Server
-  participant V as Zod Validator
-  participant DB as Drizzle + PostgreSQL
+    participant C as Client
+    participant S as Fastify Server
+    participant V as Zod Validator
+    participant DB as Drizzle + PostgreSQL
 
-  C->>S: POST /courses {title}
-  S->>V: Validar body
-  V-->>S: OK ou Erro 400
-  alt válido
-    S->>DB: INSERT INTO courses (title)
-    DB-->>S: {id}
-    S-->>C: 201 {courseId}
-  else inválido
-    S-->>C: 400
-  end
+    C->>S: POST /courses {title}
+    S->>V: Validar body
+    V-->>S: OK ou Erro 400
+    alt válido
+        S->>DB: INSERT INTO courses (title)
+        DB-->>S: {id}
+        S-->>C: 201 {courseId}
+    else inválido
+        S-->>C: 400
+    end
 
-  C->>S: GET /courses
-  S->>DB: SELECT id,title FROM courses
-  DB-->>S: lista
-  S-->>C: 200 {courses: [...]} 
+    C->>S: GET /courses
+    S->>DB: SELECT id,title FROM courses
+    DB-->>S: lista
+    S-->>C: 200 {courses: [...]}
 
-  C->>S: GET /courses/:id
-  S->>V: Validar param id (uuid)
-  V-->>S: OK ou Erro 400
-  alt encontrado
-    S->>DB: SELECT * FROM courses WHERE id=...
-    DB-->>S: course
-    S-->>C: 200 {course}
-  else não encontrado
-    S-->>C: 404
-  end
-
+    C->>S: GET /courses/:id
+    S->>V: Validar param id (uuid)
+    V-->>S: OK ou Erro 400
+    alt encontrado
+        S->>DB: SELECT * FROM courses WHERE id=...
+        DB-->>S: course
+        S-->>C: 200 {course}
+    else não encontrado
+        S-->>C: 404
+    end
 
 ## Scripts
 
