@@ -100,6 +100,7 @@ Tabelas principais definidas em `src/database/schema.ts`:
 - `email` (text, único, obrigatório)
 
 ## Fluxo principal (Mermaid)
+```mermaid
 sequenceDiagram
     participant C as Client
     participant S as Fastify Server
@@ -117,22 +118,8 @@ sequenceDiagram
         S-->>C: 400
     end
 
-    C->>S: GET /courses
-    S->>DB: SELECT id,title FROM courses
-    DB-->>S: lista
-    S-->>C: 200 {courses: [...]}
 
-    C->>S: GET /courses/:id
-    S->>V: Validar param id (uuid)
-    V-->>S: OK ou Erro 400
-    alt encontrado
-        S->>DB: SELECT * FROM courses WHERE id=...
-        DB-->>S: course
-        S-->>C: 200 {course}
-    else não encontrado
-        S-->>C: 404
-    end
-
+````
 ## Scripts
 
 - `npm run dev`: inicia o servidor com reload e carrega variáveis de `.env`
