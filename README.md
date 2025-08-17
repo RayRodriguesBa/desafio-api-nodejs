@@ -1,41 +1,125 @@
-# API Simples
+# Desafio Node.js – Primeira API
 
-## Descrição
+API simples em Node.js + TypeScript usando Fastify, Drizzle ORM (PostgreSQL) e Zod. Inclui documentação Swagger/Scalar em ambiente de desenvolvimento.
 
-Esta é uma API simples desenvolvida para fins de estudo e demonstração de conceitos básicos de desenvolvimento backend.
+## Requisitos
 
-## Instalação
+- Node.js 22+
+- Docker e Docker Compose
+- npm (ou outro gerenciador, mas o projeto usa `package-lock.json`)
+
+## Tecnologias
+
+- Fastify 5
+- TypeScript
+- Drizzle ORM + PostgreSQL
+- Zod (validação)
+- Swagger/OpenAPI + Scalar API Reference (em `/docs` quando `NODE_ENV=development`)
+
+## Configuração
+
+1. Clone o repositório e acesse a pasta do projeto.
+2. Instale as dependências:
+    ```bash
+    npm install
+    ```
+3. Suba o banco Postgres com Docker:
+    ```bash
+    docker compose up -d
+    ```
+4. Crie um arquivo `.env` na raiz com:
+    ```env
+    DATABASE_URL=postgresql://postgres:postgres@localhost:5432/desafio
+    NODE_ENV=development
+    ```
+5. Rode as migrações (Drizzle):
+    ```bash
+    npm run db:migrate
+    ```
+    (Opcional) Para inspecionar o schema/estado com o Drizzle Studio:
+    ```bash
+    npm run db:studio
+    ```
+
+## Executando o servidor
 
 ```bash
-git clone <url-do-repositório>
-cd <nome-da-pasta>
-npm install
+npm run dev
+```
+- Porta padrão: [http://localhost:3333](http://localhost:3333)
+- Logs legíveis habilitados
+- Documentação da API (em dev): [http://localhost:3333/docs](http://localhost:3333/docs)
+
+## Endpoints
+
+Base URL: `http://localhost:3333`
+
+### POST `/courses`
+
+Cria um curso
+
+**Body (JSON):**
+```json
+{ "title": "Curso de Docker" }
 ```
 
-## Uso
+**Respostas:**
+- 201: `{ "courseId": "<uuid>" }`
 
-```bash
-npm start
-```
+### GET `/courses`
 
-Acesse `http://localhost:3000` para utilizar a API.
+Lista todos os cursos
 
-## Funcionalidades
+**Resposta:**
+- 200: `{ "courses": [{ "id": "<uuid>", "title": "..." }] }`
 
-- CRUD de recursos
-- Validação de dados
-- Rotas RESTful
-- Respostas em JSON
+### GET `/courses/:id`
 
-## Diagrama de Fluxo
+Busca um curso pelo ID
+
+**Parâmetros:** `id` (UUID)
+
+**Respostas:**
+- 200: `{ "course": { "id": "<uuid>", "title": "...", "description": "... | null" } }`
+- 404: vazio
+
+> Há um arquivo `requisicoes.http` com exemplos prontos (compatível com extensões de REST Client).
+
+## Modelos (schema)
+
+Tabelas principais definidas em `src/database/schema.ts`:
+
+### courses
+- `id` (uuid, pk, default random)
+- `title` (text, único, obrigatório)
+- `description` (text, opcional)
+
+### users (exemplo para estudos)
+- `id` (uuid, pk, default random)
+- `name` (text, obrigatório)
+- `email` (text, único, obrigatório)
+
+## Fluxo principal (Mermaid)
 
 ```mermaid
 flowchart TD
-    A[Requisição do Cliente] --> B{Rota da API}
-    B -- GET/POST/PUT/DELETE --> C[Controlador]
-    C --> D[Serviço]
-    D --> E[Banco de Dados]
-    E --> D
-    D --> C
-    C --> F[Resposta ao Cliente]
+     A[Usuário] -->|POST /courses| B[API Fastify]
+     B -->|Valida com Zod| C[Drizzle ORM]
+     C -->|Salva no PostgreSQL| D[Retorna resposta]
+     A -->|GET /courses| B
+     B -->|Consulta Drizzle| C
+     C -->|Busca no PostgreSQL| D
 ```
+
+## Scripts
+
+- `npm run dev`: inicia o servidor com reload e carrega variáveis de `.env`
+- `npm run db:generate`: gera artefatos do Drizzle a partir do schema
+- `npm run db:migrate`: aplica migrações no banco
+- `npm run db:studio`: abre o Drizzle Studio
+
+## Dicas e solução de problemas
+
+- **Conexão recusada ao Postgres:** confirme `docker compose up -d` e que a porta 5432 não está em uso.
+- **Variável DATABASE_URL ausente:** verifique seu `.env`. O Drizzle exige essa variável para `db:generate`, `db:migrate` e `db:studio`.
+- **Docs não aparecem em /docs:** garanta `NODE_ENV=development` no `.env` e reinicie o servidor.
