@@ -1,0 +1,23 @@
+
+GET  http://localhost:3333/courses/8cdbc3a8-b0c9-42a2-a6b0-7f4350d88946
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3Zjk0NDdmNS1kMzM1LTQ5ZTktOTM3Yy1mNTQ4OGY3NjFiZDAiLCJyb2xlIjoic3R1ZGVudCIsImlhdCI6MTc1NTM3NjE2N30.lgdRUGTkdNifwXrPWDGTUbyI8ekn3rNJHp92JzPw-Lw
+
+GET http://localhost:3333/courses?orderBy=title&page=1
+
+
+# POST http://localhost:3333/sessions
+# Content-Type: application/json
+
+# {
+#     "email": "Aline66@yahoo.com",
+#     "password":"8549830"
+# }
+
+# POST http://localhost:3333/courses
+# Content-Type: application/json
+
+# {
+#   "title": "curso de jjjs"
+# }
+
+
